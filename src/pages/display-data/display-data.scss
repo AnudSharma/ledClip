@@ -1,37 +1,40 @@
 page-display-data {
+    .bg-image{
+        background-color:  rgb(228, 211, 154);;
+        background-repeat: no-repeat;
+        background-position: center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;
+        
+    }
+    
+    .invisibleButton {
+        height:10px;
+        width:40px;
+    }
     .ion-item-navbar-button{
         clear:true;
-        color:black;
+        color:peru;
         text-transform: none;
         
     }
 
-    .stepsdisplay{
-        font-size: 20px
-
+    .ion-item-border {    
+        border-radius: 30px !important;  
+        border: 5mm;
+        margin-bottom: 10px;
+        
+        box-shadow: 5px 5px 2px grey;
+        
+        border: 2px solid #ac9200;
+        opacity: 0.5;
+        
+    
     }
 
-    .yellow-bulb
-    {
-        background-image: url('../assets/imgs/yellowbulb.png');
-        background-repeat: no-repeat;
-        background-position: center;
-       
+    .no-padding {
+        padding: 0px !important;
     }
 
-    .green-bulb
-    {
-        background-image: url('../assets/imgs/greenbulb.png');
-        background-repeat: no-repeat;
-        background-position: center;
-       
-    }
-
-    .blue-bulb
-    {
-        background-image: url('../assets/imgs/bluebulb.png');
-        background-repeat: no-repeat;
-        background-position: center;
-       
-    }
 }

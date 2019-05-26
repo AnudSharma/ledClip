@@ -1,0 +1,40 @@
+page-create-new-game {
+
+    .bg-image{
+        background-color: rgb(228, 211, 154);
+        background-repeat: no-repeat;
+        background-position: center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;
+        
+    }
+    
+    .invisibleButton {
+        height:10px;
+        width:40px;
+    }
+
+    .ion-item-navbar-button{
+        clear:true;
+        color:white;
+        text-transform: none;
+        
+    }
+
+    .ion-item-border {    
+        border-radius: 30px !important;  
+        border: 5mm;
+        margin-bottom: 10px;
+        
+        box-shadow: 5px 5px 2px grey;
+        
+        border: 2px solid #00ac42;
+        opacity: 0.5;
+   
+    }
+
+    .half-button-width{
+		width:160px;
+	}
+}

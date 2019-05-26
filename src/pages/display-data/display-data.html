@@ -7,13 +7,11 @@
 <ion-header>
 
   <ion-navbar hideBackButton>
-    <ion-title>{{userName}}'s activity</ion-title>
+    <ion-title>Games</ion-title>
     <ion-buttons  small end  >
       <ion-grid  >  
         <ion-row justify-content-center align-items-center>
-            <button ion-button clear=true class ="ion-item-navbar-button" (click)="refreshView()"  >
-                Bluetooth : {{isOff?'OFF':'ON'}}  &nbsp;
-               <ion-icon  end  name="refresh"></ion-icon></button>
+            <button ion-button clear=true class ="ion-item-navbar-button" (click)="refreshView()"  >{{userName}}, {{userSteps}} steps, {{userActiveMinutes}} mins &nbsp; <ion-icon  end  name="refresh"></ion-icon></button>
         </ion-row>  
       </ion-grid>
     </ion-buttons>
@@ -21,45 +19,116 @@
 
 </ion-header>
 
-<ion-content padding>
-    <ion-buttons  small end  >
-        <ion-grid  >  
-          <ion-row  justify-content-center align-items-center>
-<h1 class="stepsdisplay"> {{userSteps}} steps &nbsp;  {{userActiveMinutes}} mins</h1>
 
-              <!-- <button ion-button clear=true class="stepsdisplay"
-               (click)="refreshView()"  >
-                 {{userSteps}} steps &nbsp;  {{userActiveMinutes}} mins &nbsp; 
-                 <ion-icon  end  name="refresh"></ion-icon>
-                </button> -->
-          </ion-row>  
-        </ion-grid>
-      </ion-buttons>
+<ion-content padding class = "bg-image"><br/>
+Start a new game by inviting your friends. Get more and more activity to collect all gems to decorate your crown.
+<br/>
+<br/>
 
-  <ion-card-header>
-      <img  src={{displayIcon}} >
-    
-<!--      
-          <img *ngIf ="LEDColor===0" src="assets/imgs/yellowbulb.png">
-          <img *ngIf ="LEDColor===1" src="assets/imgs/bluebulb.PNG" >
-          <img *ngIf ="LEDColor===2" src="assets/imgs/greenbulb.PNG" > -->
-      
-  </ion-card-header>
-  
+<button ion-button full (click)="createNewGame()" style="text-transform: none;">Start New Game</button>
 
-  <ion-item text-center no-lines >{{displayString}}</ion-item>
+<br/>
+<br/>
 
-  <ion-item no-lines></ion-item>
-  <ion-item no-lines></ion-item>
-  
-  <ion-item no-lines *ngIf="status==='Connected'">
-      <ion-label>{{turnOnOff_text}}</ion-label>
-      <ion-toggle [(ngModel)]="statusBoolean" checked={{statusBoolean}} (ionChange)="sendTurnOnOffLED()"></ion-toggle>
+<ion-list no-lines> <!-- ******************  INVITED GAMES ******************  -->
+
+  <ion-item (click)="expandInvitedGames()" class="ion-item-border" >Invited Games <button  ion-button style="color:black" item-right clear *ngIf="numberOfInvitedGames>0" >{{numberOfInvitedGames}}</button><ion-icon item-right name={{invitedGameArrow}}></ion-icon></ion-item>
+  <ion-item  style="background: transparent" *ngIf="expandInvitedGame && numberOfInvitedGames>0" style="background: transparent" class ="no-padding" >
+
+    <!-- COMPETITIVE INVITED GAMES -->
+    <ion-item style="background: transparent" *ngFor="let invite of invitedGroupNameListComp;let i = index" (click)="openGameDetails(2,i,'comp')" class ="no-padding">
+        <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+      <p>{{invite}} </p>
+      <button ion-button item-right (click)="acceptInvite(i,'comp');$event.stopPropagation();" style="width: 50px" ><ion-icon name="checkmark-circle" style="font-size: 22px"></ion-icon></button>
+      <button ion-button item-right (click)="DeclineInvite(i,'comp');$event.stopPropagation();" style="opacity: 0.2;width: 50px"><ion-icon name="close-circle" style="font-size: 22px"></ion-icon></button>    
+      <ion-icon item-right style="font-size:20px" name='person'></ion-icon>
     </ion-item>
 
+      <!-- Collaborative INVITED GAMES -->
+      <ion-item style="background: transparent" *ngFor="let invite of invitedGroupNameListCol;let i = index" (click)="openGameDetails(2,i,'col')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{invite}} </p>
+        <button ion-button item-right (click)="acceptInvite(i,'col');$event.stopPropagation();" style="width: 50px"  ><ion-icon name="checkmark-circle" style="font-size: 22px"></ion-icon></button>
+        <button ion-button item-right (click)="DeclineInvite(i,'col');$event.stopPropagation();" style="opacity: 0.2;width: 50px;"  ><ion-icon name="close-circle"style="font-size: 22px" ></ion-icon></button>   
+        <ion-icon item-right  name='people'></ion-icon> 
+      </ion-item>
 
+      <!--COMPETITIVE  INVITED ACCEPTED GAMES -->
+      <ion-item style="background: transparent"  *ngFor="let invite of invitedAcceptedGroupNameListComp ;let i = index "(click)="openGameDetails(1,i,'comp')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{invite}}</p> 
+        <ion-icon item-right style="font-size:20px"  name='person'></ion-icon>
+      </ion-item>
+      
+      <!-- Collaborative INVITED ACCEPTED GAMES -->
+      <ion-item style="background: transparent"  *ngFor="let invite of invitedAcceptedGroupNameListCol ;let i = index "(click)="openGameDetails(1,i,'col')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{invite}}</p> 
+        <ion-icon item-right  name='people'></ion-icon>
+      </ion-item>
+    </ion-item> 
+      
+
+<!-- ****************** ACTIVE/READYTOPLAY GAMES  ****************** -->
+
+  <ion-item (click)="expandActiveGames()" class="ion-item-border">Active Games <button  ion-button item-right clear style="color:black" *ngIf="numberOfActiveGames>0">{{numberOfActiveGames}}</button><ion-icon item-right name={{activeGameArrow}}></ion-icon></ion-item>
+  <ion-item  *ngIf="expandActiveGame && numberOfActiveGames>0" style="background: transparent" class ="no-padding" >
+    <!-- **** COMPETITIVE GAME ****-->
+      <!-- READY TO PLAY GAMES -->
+      <ion-item style="background: transparent" *ngFor="let readyToPlayGame of readyToPlayGroupNameListComp; let i= index" (click)="openGameDetails(3,i,'comp')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{readyToPlayGame}}</p>
+        <ion-icon item-right   style="font-size:20px;" name='person'></ion-icon>
+      </ion-item>
+
+      <!-- ACTIVE GAMES -->
+      <ion-item  style="background: transparent" *ngFor="let activeGame of activeGroupNameListComp; let i= index" (click)="openGameDetails(4,i,'comp')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{activeGame}}</p>
+        <ion-icon item-right style="font-size:20px;" name='person'></ion-icon>
+      </ion-item>
+      
+    <!-- **** Collaborative GAME ****-->
+      <!-- READY TO PLAY GAMES -->
+      <ion-item style="background: transparent" *ngFor="let readyToPlayGame of readyToPlayGroupNameListCol; let i= index" (click)="openGameDetails(3,i,'col')" class ="no-padding">
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+        <p>{{readyToPlayGame}}</p>
+        <ion-icon item-right  name='people'></ion-icon>
+      </ion-item>
+      <!-- ACTIVE GAMES -->
+      <ion-item  style="background: transparent" *ngFor="let activeGame of activeGroupNameListCol; let i= index" (click)="openGameDetails(4,i,'col')" class ="no-padding">
+        
+          <button ion-button clear item-left ><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+          <p>{{activeGame}}</p>
+        <ion-icon  item-right  name='people'></ion-icon>
+      </ion-item>
+  </ion-item>
+
+   <!-- FINISHED GAMES -->
+   <ion-item (click)="expandCompletedGames()" class="ion-item-border">Completed Games <button  ion-button item-right clear style="color:black" *ngIf="numberOfCompletedGames>0">{{numberofWinGames}} &nbsp;<ion-icon  style="font-size: 15px;width: 10px;color: black" name="trophy" ></ion-icon>  &nbsp;   of {{numberOfCompletedGames}}</button><ion-icon item-right name={{completedGameArrow}}></ion-icon></ion-item>
+   <ion-item  *ngIf="expandCompletedGame && numberOfCompletedGames>0" style="background: transparent" class ="no-padding" >
+      <!-- **** COMPETITIVE GAME ****-->
+       <ion-item style="background: transparent" class ="no-padding" *ngFor = "let finishGame of gameOverGroupNameListComp;let i=index" (click)="openGameDetails(5,i,'comp')" >
+         <button ion-button clear item-left *ngIf="gameOverMyStatusListComp[i]==='You Won'"><ion-icon  style="font-size: 15px;width: 10px;color: black" name="trophy" ></ion-icon></button>
+         <button ion-button clear item-left *ngIf="gameOverMyStatusListComp[i]==='You Lost'"><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+         <p>{{finishGame}}</p>
+         
+         <ion-icon item-right style="font-size:20px" name='person'></ion-icon>
+       </ion-item>
+
+       <!-- **** Collaborative GAME ****-->
+       <ion-item style="background: transparent" class ="no-padding" *ngFor = "let finishGame of gameOverGroupNameListCol;let i=index" (click)="openGameDetails(5,i,'col')">
+           <button ion-button clear item-left *ngIf="gameOverMyStatusListCol[i]==='You Won'"><ion-icon  style="font-size: 15px;width: 10px;color: #000;" name="trophy" ></ion-icon></button>
+         <button ion-button  clear item-left *ngIf="gameOverMyStatusListCol[i]==='You Lost'"><ion-icon  style="font-size: 15px;width: 10px" ></ion-icon></button>
+
+           <p>{{finishGame}}</p>
+
+         
+         <ion-icon item-right  name='people'></ion-icon>
+       </ion-item>
+   </ion-item>
+ </ion-list>
 </ion-content>
-
 <ion-footer no-shadow >
   <ion-toolbar position="bottom" style="opacity: 0.6;">
 

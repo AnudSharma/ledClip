@@ -1,3 +1,18 @@
 page-login {
+    .bg-image{
+       
+        background-color: rgb(228, 211, 154);
+        background-repeat: no-repeat;
+        background-position: center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;
+        
+    }
+    
+    .invisibleButton {
+        height:10px;
+        width:40px;
+    }
 
 }

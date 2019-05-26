@@ -1,16 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-import { AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 import { HttpClient } from '@angular/common/http';
-import { Events } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { AES256 } from '@ionic-native/aes-256';
+import { AlertController } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
 import {globals}  from '../../app/globalConstants';
-import { Storage } from '@ionic/storage';
-import { IonicStorageModule } from '@ionic/storage';
 import { DisplayDataPage } from '../display-data/display-data';
+import { ForgotPasswordPage } from '../forgot-password/forgot-password';
+
 /**
  * Generated class for the LoginPage page.
  *
@@ -25,12 +24,13 @@ import { DisplayDataPage } from '../display-data/display-data';
   providers:[globals]
 })
 export class LoginPage {
-  userEmail:any;
-  accessToken:any;
-  networkStatus:any;
+  userEmail:any = {};
+  accessToken:any = {};
+  networkStatus:any = {};
   registering=false;
   data:any={};
   userdata:any = {};
+  registrationID:any={};
 
   //password encryption
   encryptedPassowrd="";
@@ -40,25 +40,26 @@ export class LoginPage {
   type="password";
   password_icon="eye";
 
-  constructor(public navCtrl: NavController, 
-              public navParams: NavParams,  
-              private storage:Storage, 
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private storage:Storage,
               public httpClient:HttpClient,
               public inAppBrowser:InAppBrowser,
               private aes256: AES256,
-              private network: Network,
               private alertCtrl: AlertController,
-              public events: Events,
+              private events:Events,
+              private network:Network,
               private global:globals) {
+
   }
 
-  ionViewDidLoad() {
+  ionViewDidLoad() 
+  {
     console.log('ionViewDidLoad LoginPage');
   }
 
   ionViewWillEnter()
   {
-    //check network status
     let type = this.network.type;
     if(type=='none'||type=='undefined')
     {
@@ -74,93 +75,9 @@ export class LoginPage {
       this.networkStatus = networkdata;
     });
 
-    // Display data if credentials already stored
+    // reset input fields
     this.resetInputs();
-    if(!(this.storage.get('accessTokenLED')===null) && !(this.storage.get('userEmailLED')===null))
-    {
-      this.getUsername().then(userNamedata=>
-        {
-          this.getUserToken().then(userTokenData=>
-          {
-            this.getLoginDetails().then(loginDetailsData=>
-            {
-              if(loginDetailsData['error'])
-              {
-                //this.presentAlert('Error',loginDetailsData['error'],'OK');
-                console.log('login Data',loginDetailsData)
-              }
-              else if(loginDetailsData['login']=='success')
-              {
-                console.log('Login Success',loginDetailsData);
-               // this.navCtrl.push('DisplayDataPage');
-                this.navCtrl.push('DisplayDataPage',{data:loginDetailsData});
-              }
-            });
-          });
-        });
-    }
 
-  }
-
-  ionViewWillLeave()
-  {
-    this.events.unsubscribe('networkStatus');
-  }
-
-  getUsername()
-  {
-    console.log("getUserDetails");
-    return new Promise(resolve => {
-      this.storage.get('userEmailLED').then((val) => {
-        this.userEmail =val;
-        resolve(val);
-      });})
-  }
-  
-  getUserToken()
-  {
-    console.log("getUserToken");
-    return new Promise(resolve => {
-      this.storage.get('accessTokenLED').then((val) => {
-        this.accessToken = val;
-        resolve(val);
-      });})
-  }
-
-
-  getLoginDetails()
-  {
-    console.log("getLoginDetails");
-    var link = this.global.serverURI.concat('direct_login.php?username=')
-    link = link.concat(this.userEmail);
-    link = link.concat('&accessToken=');
-    link=link.concat(this.accessToken);
-  
-    console.log(link);
-    return new Promise(resolve => {
-      if(this.networkStatus=='online'){
-      this.httpClient.get(link)
-          .subscribe(data => {
-            resolve(data);
-          }, error => {
-            resolve(error);
-          })
-        }
-        else
-        {
-          this.presentAlert('Internet Disconnected','Please retry after connecting to the internet','Retry');
-        }
-    })
-  }
-  
-  
-  presentAlert(titleMessage :string,subTitleMessage: string,buttonText:string) {
-    let alert = this.alertCtrl.create({
-      title: titleMessage,
-      subTitle: subTitleMessage,
-      buttons: [buttonText]
-    });
-    alert.present();
   }
 
   resetInputs()
@@ -175,6 +92,20 @@ export class LoginPage {
     if(this.data.nickname)
       this.userdata.nickname="";
       this.data.password="";
+  }
+
+  ionViewWillLeave()
+  {
+    this.events.unsubscribe('networkStatus');
+  }
+
+  presentAlert(titleMessage :string,subTitleMessage: string,buttonText:string) {
+    let alert = this.alertCtrl.create({
+      title: titleMessage,
+      subTitle: subTitleMessage,
+      buttons: [buttonText]
+    });
+    alert.present();
   }
 
   encryptPswrd(pwd:string)
@@ -199,6 +130,16 @@ export class LoginPage {
     }
   }
 
+  // Method to get device registration ID to send notifications to
+  getRegistrationID()
+  {
+    return new Promise(resolve => {
+    this.storage.get('registrationIDCTTAsyncS').then((val) => {
+    this.registrationID =val;
+    console.log("reg ID",val)
+    resolve(val);
+  });})
+  }
 
   // Method to get user details
   getUserData()
@@ -239,8 +180,8 @@ export class LoginPage {
     link=link.concat(this.userdata.age)
     link=link.concat('&gender=');
     link=link.concat(this.userdata.gender)
-    link = link.concat('&registrationID=null')
-    
+    link = link.concat('&registrationID=')
+    link = link.concat(this.registrationID);
     console.log('registering at',link)
     return new Promise(resolve => {
       if(this.networkStatus==='online'){
@@ -264,10 +205,10 @@ export class LoginPage {
     link = link.concat('&password=');
     link = link.concat(this.encryptedPassowrd);
     link = link.concat('&loginType=login'); 
-    link = link.concat('&registrationID=null')
-  
+    link = link.concat('&registrationID=')
+    link = link.concat(this.registrationID);
     console.log('logging at',link)
-    
+    console.log(JSON.stringify(this.registrationID));
     return new Promise(resolve => {
       if(this.networkStatus==='online'){
       this.httpClient.get(link)
@@ -283,7 +224,6 @@ export class LoginPage {
         }
     });
   }
-
 
   login()
   {
@@ -303,6 +243,8 @@ export class LoginPage {
     {
       this.encryptPswrd(this.data.password).then(encryptPswrd=>
       {
+        this.getRegistrationID().then(regIDData=>
+        {
           this.getLoginUserDetails().then(loginData=>
           {
             console.log('Login details',loginData);
@@ -323,16 +265,17 @@ export class LoginPage {
               this.loginSuccess(loginData,'login');
             }
           })
+        })
       })
     }
     this.data.password="";
   }
-  
+
   loginSuccess(loginData, type)
   {
     var link="";
-    this.storage.set('accessTokenLED',loginData['access_token']);
-    this.storage.set('userEmailLED',loginData['username']);
+    this.storage.set('accessTokenCTTAsyncS',loginData['access_token']);
+    this.storage.set('userEmailCTTAsyncS',loginData['username']);
     this.userEmail = loginData['username'];
     this.accessToken = loginData['access_token'];
     if(type=='login')
@@ -395,7 +338,8 @@ export class LoginPage {
         this.encryptPswrd(this.data.password).then(encryptpswrd=>
         {
           console.log(encryptpswrd);
-          
+          this.getRegistrationID().then(regIDData=>
+          {
             this.getRegisterUserDetails().then(registerData=>
             {
               if(registerData['error'])
@@ -407,7 +351,7 @@ export class LoginPage {
                 this.loginSuccess(registerData,'register');
               }
             })
-          
+          })
         })
       }
     }
@@ -419,8 +363,4 @@ export class LoginPage {
     this.navCtrl.push('ForgotPasswordPage');
   }
 
-  alertInfo()
-  {
-    this.presentAlert('Information', 'This application records your fitness data', 'OK')
-  }
 }

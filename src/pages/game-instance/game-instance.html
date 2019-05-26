@@ -1,0 +1,201 @@
+<!--
+  Generated template for the GameInstancePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Game</ion-title>
+    <ion-buttons  small end  >
+        <ion-grid  >  
+          <ion-row justify-content-center align-items-center>
+              <button ion-button clear=true class ="ion-item-navbar-button"  (click)="refreshView()">{{selfName}}, {{currentSteps}} steps,{{currentActiveMinutes}} mins &nbsp; <ion-icon  end  name="refresh"></ion-icon></button>
+          </ion-row>  
+        </ion-grid>
+      </ion-buttons>  
+  </ion-navbar>
+</ion-header>
+
+
+
+<ion-content padding class = {{bgImage}} >
+
+<!-- ************************ GAME INVITED  ************************ -->
+
+<!-- GROUP NAME-->
+<ion-item no-lines style="background: transparent"  *ngIf="gameStatus==='gameInvited'">Group Name
+    <ion-item no-lines style="background: transparent">  
+        <ion-input align="center" type='text' [(ngModel)]="groupName"  value={{groupName}} ></ion-input>
+      </ion-item>
+      <br/>
+</ion-item>
+
+<!-- LIST OF PLAYERS -->
+<ion-item style="background: transparent"  *ngIf="gameStatus=='gameInvited' && ifOwner===true">Players
+      
+    <ion-item  style="background: transparent" text-wrap *ngFor="let player of allPlayerList;let i = index ">
+      <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])>=0">{{playerList[playerIDList.indexOf(allPlayerIDList[i])]}}</ion-label>
+      <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])<0">{{player}}</ion-label>
+      <ion-label *ngIf="allPlayerCheckedList[i]===false">{{player}}</ion-label>
+      <ion-checkbox item-right  [(ngModel)]="allPlayerCheckedList[i]"  ></ion-checkbox>
+    </ion-item>
+
+</ion-item>
+
+<ion-item style="background: transparent"  *ngIf="gameStatus=='gameInvited' && ifOwner===false">Players
+
+  <ion-item  style="background: transparent" text-wrap *ngFor="let player of allPlayerList;let i = index ">
+    <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])>=0">{{playerList[playerIDList.indexOf(allPlayerIDList[i])]}}</ion-label>
+    <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])<0">{{player}}</ion-label>
+    <ion-label *ngIf="allPlayerCheckedList[i]===false">{{player}}</ion-label>
+    <ion-checkbox disabled="true" item-right  [(ngModel)]="allPlayerCheckedList[i]"  ></ion-checkbox>
+  </ion-item>
+
+</ion-item>
+
+<!-- UPDATE & DONE BUTTON-->
+<ion-row  *ngIf="gameStatus==='gameInvited' && ifOwner===true">
+  <ion-col col-6> 
+    <button ion-button (click)="updatePlayers()" style="text-transform: none;" class="half-button-width"  >
+      Update
+    </button>
+  </ion-col>
+
+  <ion-col col-6>
+    <button ion-button (click)="Done()" style="text-transform: none;" class="half-button-width" >
+      Done
+    </button>
+  </ion-col>
+</ion-row>
+<button ion-button *ngIf="gameStatus==='gameInvited' && ifOwner===false" (click)="Done()"  style="text-transform: none;" full >Done</button>
+
+<!-- ************************ GAME READY TO PLAY  ************************ -->
+    <!-- GROUP NAME-->
+  
+    <ion-item no-lines style="background: transparent"  *ngIf="gameStatus==='gameReadyToPlay'">Group Name
+        <ion-item no-lines style="background: transparent">  
+            <ion-input align="center" type='text' [(ngModel)]="groupName"  value={{groupName}} ></ion-input>
+          </ion-item>
+          <br/>
+    </ion-item>
+
+    <!-- LIST OF PLAYERS -->
+    <ion-item style="background: transparent"  *ngIf="gameStatus=='gameReadyToPlay'">Players
+        <ion-item  style="background: transparent" text-wrap *ngFor="let player of allPlayerList;let i = index ">
+          <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])>=0">{{playerList[playerIDList.indexOf(allPlayerIDList[i])]}}</ion-label>
+          <ion-label *ngIf="allPlayerCheckedList[i]===true && playerIDList.indexOf(allPlayerIDList[i])<0">{{player}}</ion-label>
+          <ion-label *ngIf="allPlayerCheckedList[i]===false">{{player}}</ion-label>
+          <ion-checkbox item-right  [(ngModel)]="allPlayerCheckedList[i]"  ></ion-checkbox>
+        </ion-item>
+    </ion-item>
+
+    <!-- UPDATE & DONE BUTTON-->
+    <ion-row  *ngIf="gameStatus==='gameReadyToPlay' && ifOwner===true">
+        <ion-col col-4> 
+          <button ion-button (click)="updatePlayers()" style="text-transform: none;" class="third-button-width"  >
+            Update
+          </button>
+        </ion-col>
+      
+        <ion-col col-4>
+          <button ion-button (click)="Done()" style="text-transform: none;" class="third-button-width" >
+            Done
+          </button>
+        </ion-col>
+
+        <ion-col col-4>
+          <button ion-button (click)="StartGame()"  style="text-transform: none;" class="third-button-width" >
+          Start
+          </button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row  *ngIf="gameStatus==='gameReadyToPlay' && ifOwner===false">
+          <ion-col col-6>
+            <button ion-button (click)="Done()" style="text-transform: none;" class="half-button-width" >
+              Done
+            </button>
+          </ion-col>
+  
+          <ion-col col-6>
+            <button ion-button (click)="StartGame()"  style="text-transform: none;" class="half-button-width" >
+            Start
+            </button>
+          </ion-col>
+        </ion-row>
+
+<!-- ************************ GAME IN PROGRESS  ************************ -->
+
+  <!-- COMPETITIVE GAME -->
+  <ion-item no-lines style="background: transparent" *ngIf="gameType==='comp' && gameStatus==='gameInProgress'" >
+        
+      <ion-card-header *ngIf="timeRemaining>0" > 
+            <button ion-button  large block clear style="font-size: 26px" class="timer-button x-large">{{timer.displayTime}}</button>
+          </ion-card-header>
+       
+          <ion-row>
+            <ion-col col-6 col-md-4  *ngFor="let player of  playerImageList;let i = index">
+              <div class="image-container" [style.background-image]="'url('+player+')'" ></div>
+              <div class = "card-title">{{playerList[i]}}</div>
+              <div class ="card-subtitle">{{playerStepList[i]}} steps </div>
+            </ion-col>
+          </ion-row>
+</ion-item> <!--competitive Game-->
+
+<!-- COLLABORATIVE GAME -->
+<ion-item no-lines style="background: transparent" *ngIf="gameType==='col' && gameStatus==='gameInProgress'" class ="card-background-page">
+    
+      <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/><br/>
+      <ion-card-header *ngIf="timeRemaining>0" > 
+          <button ion-button  style="color:#ddc83e;font-size: 26px" large block clear class="timer-button x-large">{{timer.displayTime}}</button>
+        </ion-card-header>
+        <br/> 
+      <ion-card-header >
+          <button ion-button text-wrap *ngIf="stepsToWin>0" large block clear style="text-transform: none;color: #ddc83e "  > Get {{stepsToWin}} as a team to win the game</button>
+      </ion-card-header>
+  </ion-item> <!--collaborative Game-->
+
+
+  <!-- ************************ GAME OVER  ************************ -->
+  <ion-item no-lines style="background: transparent" *ngIf="gameStatus==='gameOver'" >
+      <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/>
+      <ion-card-header >
+          <button ion-button *ngIf="selfGameStatus==='Won'" style="text-transform: none; font-size: 26px;color:#ddc83e" large block clear >You {{selfGameStatus}}</button>
+          <button ion-button *ngIf="selfGameStatus==='Lost'" style="text-transform: none;font-size: 26px ;color: #ac9200" large block clear >You {{selfGameStatus}}</button>
+      </ion-card-header>
+      <ion-row *ngFor="let player of  playerList;let i = index">
+        <ion-col style="text-transform: none;  color:#ddc83e;font-size: 24px" *ngIf="selfGameStatus==='Won'" >
+            {{player}}
+        </ion-col>
+        <ion-col style="text-transform: none; color: #ddc83e;font-size: 24px"  *ngIf="selfGameStatus==='Won'">
+          {{playerStepList[i]}} steps
+        </ion-col>
+        
+        <ion-col style="text-transform: none; color: #ddc83e;font-size: 24px" *ngIf="selfGameStatus==='Won'" >
+            {{playerStatusList[i]}}
+        </ion-col>
+        <ion-col style="text-transform: none;  color:#ac9200;font-size: 24px" *ngIf="selfGameStatus==='Lost'" >
+            {{player}}
+        </ion-col>
+        <ion-col style="text-transform: none; color: #ac9200;font-size: 24px"  *ngIf="selfGameStatus==='Lost'">
+          {{playerStepList[i]}} steps
+        </ion-col>
+        
+        <ion-col style="text-transform: none; color: #ac9200;font-size: 24px" *ngIf="selfGameStatus==='Lost'" >
+            {{playerStatusList[i]}}
+        </ion-col>
+      </ion-row>
+
+  </ion-item> <!-- GAME OVER -->
+
+</ion-content>
+<ion-footer no-shadow *ngIf="gameInProgress" >
+  <ion-toolbar position="bottom">
+      <ion-item item-start no-lines text-wrap>
+         <!-- Help your team Escape the Tunnel by getting {{endingSteps}} steps as a team. -->
+         <!--Get active to grow more flowers. The more steps you get, the more flowers blossom. Beat your opponent by getting maximum steps. -->
+         
+        </ion-item>
+  </ion-toolbar>
+</ion-footer>
