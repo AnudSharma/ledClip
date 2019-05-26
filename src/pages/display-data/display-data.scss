@@ -1,0 +1,37 @@
+page-display-data {
+    .ion-item-navbar-button{
+        clear:true;
+        color:black;
+        text-transform: none;
+        
+    }
+
+    .stepsdisplay{
+        font-size: 20px
+
+    }
+
+    .yellow-bulb
+    {
+        background-image: url('../assets/imgs/yellowbulb.png');
+        background-repeat: no-repeat;
+        background-position: center;
+       
+    }
+
+    .green-bulb
+    {
+        background-image: url('../assets/imgs/greenbulb.png');
+        background-repeat: no-repeat;
+        background-position: center;
+       
+    }
+
+    .blue-bulb
+    {
+        background-image: url('../assets/imgs/bluebulb.png');
+        background-repeat: no-repeat;
+        background-position: center;
+       
+    }
+}

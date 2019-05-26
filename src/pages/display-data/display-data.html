@@ -1,0 +1,69 @@
+<!--
+  Generated template for the DisplayDataPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar hideBackButton>
+    <ion-title>{{userName}}'s activity</ion-title>
+    <ion-buttons  small end  >
+      <ion-grid  >  
+        <ion-row justify-content-center align-items-center>
+            <button ion-button clear=true class ="ion-item-navbar-button" (click)="refreshView()"  >
+                Bluetooth : {{isOff?'OFF':'ON'}}  &nbsp;
+               <ion-icon  end  name="refresh"></ion-icon></button>
+        </ion-row>  
+      </ion-grid>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+    <ion-buttons  small end  >
+        <ion-grid  >  
+          <ion-row  justify-content-center align-items-center>
+<h1 class="stepsdisplay"> {{userSteps}} steps &nbsp;  {{userActiveMinutes}} mins</h1>
+
+              <!-- <button ion-button clear=true class="stepsdisplay"
+               (click)="refreshView()"  >
+                 {{userSteps}} steps &nbsp;  {{userActiveMinutes}} mins &nbsp; 
+                 <ion-icon  end  name="refresh"></ion-icon>
+                </button> -->
+          </ion-row>  
+        </ion-grid>
+      </ion-buttons>
+
+  <ion-card-header>
+      <img  src={{displayIcon}} >
+    
+<!--      
+          <img *ngIf ="LEDColor===0" src="assets/imgs/yellowbulb.png">
+          <img *ngIf ="LEDColor===1" src="assets/imgs/bluebulb.PNG" >
+          <img *ngIf ="LEDColor===2" src="assets/imgs/greenbulb.PNG" > -->
+      
+  </ion-card-header>
+  
+
+  <ion-item text-center no-lines >{{displayString}}</ion-item>
+
+  <ion-item no-lines></ion-item>
+  <ion-item no-lines></ion-item>
+  
+  <ion-item no-lines *ngIf="status==='Connected'">
+      <ion-label>{{turnOnOff_text}}</ion-label>
+      <ion-toggle [(ngModel)]="statusBoolean" checked={{statusBoolean}} (ionChange)="sendTurnOnOffLED()"></ion-toggle>
+    </ion-item>
+
+
+</ion-content>
+
+<ion-footer no-shadow >
+  <ion-toolbar position="bottom" style="opacity: 0.6;">
+
+    <button ion-button full (click)="Logout()"   class ="ion-item-navbar-button"  clear=true  style="text-transform: none;" >
+     Not {{userName}}? \n Logout</button>
+  </ion-toolbar>
+</ion-footer>
