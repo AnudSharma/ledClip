@@ -30,7 +30,7 @@
     "@ionic-native/status-bar": "~4.18.0",
     "@ionic/storage": "^2.2.0",
     "cordova-android": "7.1.4",
-    "cordova-browser": "5.0.4",
+    "cordova-browser": "6.0.0",
     "cordova-plugin-aes256-encryption": "1.2.0",
     "cordova-plugin-ble-central": "1.2.2",
     "cordova-plugin-compat": "1.2.0",
